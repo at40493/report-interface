@@ -4,13 +4,19 @@ interface_name=$1
 interval_time=$2
 
 #Check the input format
-if [ -z "${interface_name}" -o -z "${interval_time}" ];
-then
-	echo "Not enough argument."
-	echo "USAGE: ./report_interface.sh [interface name] [time(s)]"
-	exit 0
+if [ -z "${interface_name}" ]; then
+	printf "USAGE: ./report_interface.sh interface name [time(s)]\n\n"
+	echo "REQUIED:"
+	printf "\t interface name -  the names of the active network interfaces on the system\n\n"
+	echo "OPTINAL:"
+	printf "\t time(s) -  the time interval of report packets.(Default: 1 sec)\n\n"
+	exit 1
 fi
 
+# Default time value.
+if [ -z "${interval_time}" ]; then
+	interval_time=1; # Set 1 sec.
+fi
 
 
 # Check the interface name is exist.
