@@ -18,6 +18,17 @@ if [ -z "${interval_time}" ]; then
 	interval_time=1; # Set 1 sec.
 fi
 
+# Check the interval time is number.
+if [ -z "$(echo "${interval_time}" | sed -n "/^[+-]\?[0-9]\+$/p")" ]; then
+	echo "${interval_time} is not a number."
+	exit 1
+fi
+
+# Check the interval time is bigger than 1.
+if [ "${interval_time}" -lt 1 ]; then
+	echo "${interval_time} is less than 1."
+	exit 1
+fi
 
 # Check the interface name is exist.
 ifconfig ${interface_name} > /dev/null
@@ -27,20 +38,6 @@ then
 	exit 0
 fi 
 
-
-# Check the delay time is number.
-if [[ ! ${interval_time} =~ ^[0-9]+$ ]];
-then
-	echo "The time is not a number."
-	exit 0;
-fi
-
-# Check the delay time is bigger than 0.
-if [ ${interval_time} -lt 0 ]; 
-then
-	echo "Time is negative, it must > 0."
-	exit 0;
-fi
 
 # Show the number of packet.
 while [ 1 ]; 
