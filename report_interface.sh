@@ -42,6 +42,11 @@ fi
 # Show the number of packet.
 while [ 1 ]; 
 do
-	grep ${interface_name} /proc/net/dev| awk '{printf("RX packets: %s TX packets: %s \r"),$3,$11}'
-	sleep ${interval_time}
+	# Get RX and TX packets information.
+	packet_info=$(ifconfig "${interface_name}" | grep packets)
+	# Get the number of packets. 
+	rx_current=$(echo "${packet_info}" | grep RX | awk '{print $2}' | awk -F : '{print $2}' )
+	tx_current=$(echo "${packet_info}" | grep TX | awk '{print $2}' | awk -F : '{print $2}')
+	echo "RX packets: ${rx_current}	 TX packets: ${tx_current} "
+	sleep "${interval_time}"
 done
