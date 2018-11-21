@@ -30,12 +30,12 @@ if [ "${interval_time}" -lt 1 ]; then
 	exit 1
 fi
 
+
+ifconfig "${interface_name}" > /dev/null
 # Check the interface name is exist.
-ifconfig ${interface_name} > /dev/null
-if [ $? -ne 0 ]; 
-then
+if [ $? -ne 0 ]; then
 	# The interface is not exist.
-	exit 0
+	exit 1
 fi 
 
 
