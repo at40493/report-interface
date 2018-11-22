@@ -31,22 +31,37 @@ if [ "${interval_time}" -lt 1 ]; then
 fi
 
 
-ifconfig "${interface_name}" > /dev/null
+# Get RX and TX packets information.
+packet_info_pre=$(ifconfig "${interface_name}" | grep packets)
 # Check the interface name is exist.
 if [ $? -ne 0 ]; then
 	# The interface is not exist.
 	exit 1
 fi 
+	
+# The number of previous packet.
+rx_previous=$(echo "${packet_info_pre}" | grep RX | awk '{print $2}' | awk -F : '{print $2}')
+tx_previous=$(echo "${packet_info_pre}" | grep TX | awk '{print $2}' | awk -F : '{print $2}')
+
 
 
 # Show the number of packet.
 while [ 1 ]; 
 do
+	# The interval time
+	sleep "${interval_time}"
 	# Get RX and TX packets information.
 	packet_info=$(ifconfig "${interface_name}" | grep packets)
 	# Get the number of packets. 
 	rx_current=$(echo "${packet_info}" | grep RX | awk '{print $2}' | awk -F : '{print $2}' )
 	tx_current=$(echo "${packet_info}" | grep TX | awk '{print $2}' | awk -F : '{print $2}')
-	echo "RX packets: ${rx_current}	 TX packets: ${tx_current} "
-	sleep "${interval_time}"
+	# Subtract previous packets from current packets.
+	rx_sub=$((rx_current - rx_previous))
+	tx_sub=$((tx_current - tx_previous))
+	# Show the output.
+	echo "RX packets: ${rx_sub}	 TX packets: ${tx_sub} "
+	# store the number of packets.
+	rx_previous="${rx_current}"
+	tx_previous="${tx_current}"
+	
 done
