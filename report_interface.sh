@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 interface_name=$1
 interval_time=$2
