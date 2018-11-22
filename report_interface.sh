@@ -3,6 +3,23 @@
 interface_name=$1
 interval_time=$2
 
+
+get_packets_number(){
+
+	name=$1
+	type=$2
+	# Get the interface information.
+	interface_info=$(ifconfig "${name}")
+	# Check the interface name.
+	if [ -z "${interface_info}" ]; then
+		# The interface is not exist.
+		return 1
+	fi 
+	# Get the number of packets.
+	echo "${interface_info}" | grep packets | grep "${type}" | awk '{print $2}' | awk -F : '{print $2}'
+	return 0
+}
+
 #Check the input format
 if [ -z "${interface_name}" ]; then
 	printf "USAGE: ./report_interface.sh interface name [time(s)]\n\n"
@@ -31,17 +48,16 @@ if [ "${interval_time}" -lt 1 ]; then
 fi
 
 
-# Get RX and TX packets information.
-packet_info_pre=$(ifconfig "${interface_name}" | grep packets)
-# Check the interface name is exist.
-if [ $? -ne 0 ]; then
-	# The interface is not exist.
-	exit 1
-fi 
+
 	
 # The number of previous packet.
-rx_previous=$(echo "${packet_info_pre}" | grep RX | awk '{print $2}' | awk -F : '{print $2}')
-tx_previous=$(echo "${packet_info_pre}" | grep TX | awk '{print $2}' | awk -F : '{print $2}')
+rx_previous=$(get_packets_number "${interface_name}" "RX")
+# Get packet information failed.
+if [ -z "${rx_previous}" ]; then
+	# The interface is not exist.
+	exit 1
+fi
+tx_previous=$(get_packets_number "${interface_name}" "TX")
 
 
 
@@ -50,11 +66,9 @@ while [ 1 ];
 do
 	# The interval time
 	sleep "${interval_time}"
-	# Get RX and TX packets information.
-	packet_info=$(ifconfig "${interface_name}" | grep packets)
 	# Get the number of packets. 
-	rx_current=$(echo "${packet_info}" | grep RX | awk '{print $2}' | awk -F : '{print $2}' )
-	tx_current=$(echo "${packet_info}" | grep TX | awk '{print $2}' | awk -F : '{print $2}')
+	rx_current=$(get_packets_number "${interface_name}" "RX")
+	tx_current=$(get_packets_number "${interface_name}" "TX")
 	# Subtract previous packets from current packets.
 	rx_sub=$((rx_current - rx_previous))
 	tx_sub=$((tx_current - tx_previous))
