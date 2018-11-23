@@ -28,6 +28,14 @@ get_interface_bytes(){
 	return 0
 }
 
+usage(){
+	printf "USAGE: ./report_interface.sh -i interface name [-t time(s)]\n\n"
+	echo "REQUIED:"
+	printf "\t -i interface name -  the names of the active network interfaces on the system\n\n"
+	echo "OPTINAL:"
+	printf "\t -t time(s) -  the time interval of report packets.(Default: 1 sec)\n\n"
+}
+
 while getopts "i:t:" opt; do 
 
 	case ${opt} in
@@ -35,17 +43,16 @@ while getopts "i:t:" opt; do
 		interface_name=$OPTARG;;
 	t) # -t interval_time
 		interval_time=$OPTARG;;
+	?) 
+		usage
+		exit 1
 	esac
 done
 
 
 #Check the input format
 if [ -z "${interface_name}" ]; then
-	printf "USAGE: ./report_interface.sh -i interface name [-t time(s)]\n\n"
-	echo "REQUIED:"
-	printf "\t -i interface name -  the names of the active network interfaces on the system\n\n"
-	echo "OPTINAL:"
-	printf "\t -t time(s) -  the time interval of report packets.(Default: 1 sec)\n\n"
+	usage
 	exit 1
 fi
 
