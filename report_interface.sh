@@ -49,10 +49,15 @@ while getopts "i:t:" opt; do
 	esac
 done
 
+# There are no any arguments.
+if [ $# -eq 0 ]; then
+	usage
+	exit 1
+fi
 
 #Check the input format
 if [ -z "${interface_name}" ]; then
-	usage
+	echo "The interface name is null."
 	exit 1
 fi
 
