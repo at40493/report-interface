@@ -4,7 +4,7 @@ interface_name=$1
 interval_time=$2
 
 
-get_packets_number(){
+get_interface_bytes(){
 
 	name=$1
 	type=$2
@@ -15,8 +15,18 @@ get_packets_number(){
 		# The interface is not exist.
 		return 1
 	fi 
-	# Get the number of packets.
-	echo "${interface_info}" | grep packets | grep "${type}" | awk '{print $2}' | awk -F : '{print $2}'
+	# Get the number of bytes.
+	if [ "${type}" = "RX" ]; then
+		# RX bytes
+		echo "${interface_info}" | grep bytes | awk '{print $2}' | awk -F : '{print $2}'
+	elif [ "${type}" = "TX" ]; then
+		# TX bytes
+		echo "${interface_info}" | grep bytes | awk '{print $6}' | awk -F : '{print $2}'
+	else
+		echo "get_interface_bytes() error: the type must be RX or TX." 1>&2
+		return 1
+	fi
+	
 	return 0
 }
 
@@ -51,14 +61,16 @@ fi
 
 	
 # The number of previous packet.
-rx_previous=$(get_packets_number "${interface_name}" "RX")
-# Get packet information failed.
+rx_previous=$(get_interface_bytes "${interface_name}" "RX")
+# Get interface bytes failed.
 if [ -z "${rx_previous}" ]; then
-	# The interface is not exist.
 	exit 1
 fi
-tx_previous=$(get_packets_number "${interface_name}" "TX")
-
+tx_previous=$(get_interface_bytes "${interface_name}" "TX")
+# Get interface bytes failed.
+if [ -z "${tx_previous}" ]; then
+	exit 1
+fi
 
 
 # Show the number of packet.
@@ -67,14 +79,22 @@ do
 	# The interval time
 	sleep "${interval_time}"
 	# Get the number of packets. 
-	rx_current=$(get_packets_number "${interface_name}" "RX")
-	tx_current=$(get_packets_number "${interface_name}" "TX")
-	# Subtract previous packets from current packets.
-	rx_sub=$((rx_current - rx_previous))
-	tx_sub=$((tx_current - tx_previous))
+	rx_current=$(get_interface_bytes "${interface_name}" "RX")
+	# Get interface bytes failed.
+	if [ -z "${rx_current}" ]; then
+		exit 1
+	fi
+	tx_current=$(get_interface_bytes "${interface_name}" "TX")
+	# Get interface bytes failed.
+	if [ -z "${tx_current}" ]; then
+		exit 1
+	fi
+	# Subtract previous bytes from current bytes.
+	rx_sub=$(((rx_current - rx_previous)/interval_time))
+	tx_sub=$(((tx_current - tx_previous)/interval_time))
 	# Show the output.
-	echo "RX packets: ${rx_sub}	 TX packets: ${tx_sub} "
-	# store the number of packets.
+	echo "RX: ${rx_sub}  	Bytes/s 	TX: ${tx_sub}	Bytes/s"
+	# store the number of bytes.
 	rx_previous="${rx_current}"
 	tx_previous="${tx_current}"
 	
