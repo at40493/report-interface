@@ -1,13 +1,12 @@
 # report interface
 	
-	report_interface.sh - Report the number of packets of the active network interfaces.
+	report_interface.sh - Report the number of bytes of the active network interfaces.
 	
 Usage:
-	
-	./report_interface.sh [interface name] [time(s)]
+		./report_interface.sh -i interface name [-t time(s)]
 	
 	REQUIED:
-		interface name -  the names of the active network interfaces on the system
+		-i interface name -  the names of the active network interfaces on the system
 	
 	OPTINAL:
-		time(s) -  the time interval of report packets.(Default: 1 sec)
+		-t time(s) -  the time interval of report packets.(Default: 1 sec)
