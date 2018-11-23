@@ -95,8 +95,7 @@ fi
 
 
 # Show the number of packet.
-while [ 1 ]; 
-do
+while  true; do
 	# The interval time
 	sleep "${interval_time}"
 	# Get the number of packets. 
