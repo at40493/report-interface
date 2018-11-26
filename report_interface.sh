@@ -29,9 +29,11 @@ while getopts "i:t:" opt; do
 
 	case ${opt} in
 	i) # -i interface_name  
-		interface_name=$OPTARG;;
+		interface_name=$OPTARG
+		;;
 	t) # -t interval_time
-		interval_time=$OPTARG;;
+		interval_time=$OPTARG
+		;;
 	?) 
 		usage
 		exit 1
