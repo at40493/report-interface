@@ -17,13 +17,17 @@ get_interface_info(){
 	return 0
 }
 
-usage(){
-	printf "USAGE: ./report_interface.sh -i interface name [-t time(s)]\n\n"
-	echo "REQUIED:"
-	printf "\t -i interface name -  the names of the active network interfaces on the system\n\n"
-	echo "OPTINAL:"
-	printf "\t -t time(s) -  the time interval of report packets.(Default: 1 sec)\n\n"
-}
+# The message block.
+: <<ENDOFUSAGE
+
+USAGE: 
+	./report_interface.sh -i interface name [-t time(s)]
+REQUIED:
+	-i interface name -  the names of the active network interfaces on the system
+OPTINAL:
+	-t time(s) -  the time interval of report packets.(Default: 1 sec)
+
+ENDOFUSAGE
 
 while getopts "i:t:" opt; do 
 
@@ -35,14 +39,16 @@ while getopts "i:t:" opt; do
 		interval_time=$OPTARG
 		;;
 	?) 
-		usage
+		# Show the usage message.
+		sed -n -e '/ENDOFUSAGE$/,/^ENDOFUSAGE$/p' "$0" | sed -e '/ENDOFUSAGE$/d';
 		exit 1
 	esac
 done
 
 # There are no any arguments.
 if [ $# -eq 0 ]; then
-	usage
+	# Show the usage message.
+	sed -n -e '/ENDOFUSAGE$/,/^ENDOFUSAGE$/p' "$0" | sed -e '/ENDOFUSAGE$/d';
 	exit 1
 fi
 
