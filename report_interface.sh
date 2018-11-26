@@ -114,7 +114,7 @@ while  true; do
 	rx_sub=$(((rx_current - rx_previous)/interval_time))
 	tx_sub=$(((tx_current - tx_previous)/interval_time))
 	# Show the output.
-	echo "RX: ${rx_sub}  	Bytes/s 	TX: ${tx_sub}	Bytes/s"
+	printf "RX (bytes/s): %d \t TX (bytes/s): %d\n" "${rx_sub}" "${tx_sub}"
 	# store the number of bytes.
 	rx_previous="${rx_current}"
 	tx_previous="${tx_current}"
