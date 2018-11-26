@@ -2,10 +2,9 @@
 
 
 
-get_interface_bytes(){
+get_interface_info(){
 
 	name=$1
-	type=$2
 	# Get the interface information.
 	interface_info=$(ifconfig "${name}")
 	# Check the interface name.
@@ -13,18 +12,8 @@ get_interface_bytes(){
 		# The interface is not exist.
 		return 1
 	fi 
-	# Get the number of bytes.
-	if [ "${type}" = "RX" ]; then
-		# RX bytes
-		echo "${interface_info}" | grep bytes | awk '{print $2}' | awk -F : '{print $2}'
-	elif [ "${type}" = "TX" ]; then
-		# TX bytes
-		echo "${interface_info}" | grep bytes | awk '{print $6}' | awk -F : '{print $2}'
-	else
-		echo "get_interface_bytes() error: the type must be RX or TX." 1>&2
-		return 1
-	fi
 	
+	echo "${interface_info}"
 	return 0
 }
 
@@ -79,15 +68,19 @@ if [ "${interval_time}" -lt 1 ]; then
 fi
 
 
-
-	
+# Get the previous interface information.
+interface_info_pre=$(get_interface_info "${interface_name}")
+# Get the interface information failed.
+if [ -z "${interface_info_pre}" ]; then
+	exit 1
+fi
 # The number of previous packet.
-rx_previous=$(get_interface_bytes "${interface_name}" "RX")
+rx_previous=$(echo "${interface_info_pre}" | grep bytes | awk '{print $2}' | awk -F : '{print $2}')
 # Get interface bytes failed.
 if [ -z "${rx_previous}" ]; then
 	exit 1
 fi
-tx_previous=$(get_interface_bytes "${interface_name}" "TX")
+tx_previous=$(echo "${interface_info_pre}" | grep bytes | awk '{print $6}' | awk -F : '{print $2}')
 # Get interface bytes failed.
 if [ -z "${tx_previous}" ]; then
 	exit 1
@@ -98,13 +91,19 @@ fi
 while  true; do
 	# The interval time
 	sleep "${interval_time}"
+	# Get the current interface information.
+	interface_info_cur=$(get_interface_info "${interface_name}")
+	# Get the interface information failed.
+	if [ -z "${interface_info_cur}" ]; then
+		exit 1
+	fi
 	# Get the number of packets. 
-	rx_current=$(get_interface_bytes "${interface_name}" "RX")
+	rx_current=$(echo "${interface_info_cur}"  | grep bytes | awk '{print $2}' | awk -F : '{print $2}')
 	# Get interface bytes failed.
 	if [ -z "${rx_current}" ]; then
 		exit 1
 	fi
-	tx_current=$(get_interface_bytes "${interface_name}" "TX")
+	tx_current=$(echo "${interface_info_cur}"  | grep bytes | awk '{print $6}' | awk -F : '{print $2}')
 	# Get interface bytes failed.
 	if [ -z "${tx_current}" ]; then
 		exit 1
