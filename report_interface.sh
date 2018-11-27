@@ -29,6 +29,8 @@ OPTINAL:
 
 ENDOFUSAGE
 
+basename=$0
+
 while getopts "i:t:" opt; do 
 
 	case ${opt} in
@@ -40,7 +42,7 @@ while getopts "i:t:" opt; do
 		;;
 	?) 
 		# Show the usage message.
-		sed -n -e '/ENDOFUSAGE$/,/^ENDOFUSAGE$/p' "$0" | sed -e '/ENDOFUSAGE$/d';
+		sed -n -e '/ENDOFUSAGE$/,/^ENDOFUSAGE$/p' "${basename}" | sed -e '/ENDOFUSAGE$/d';
 		exit 1
 	esac
 done
@@ -48,7 +50,7 @@ done
 # There are no any arguments.
 if [ $# -eq 0 ]; then
 	# Show the usage message.
-	sed -n -e '/ENDOFUSAGE$/,/^ENDOFUSAGE$/p' "$0" | sed -e '/ENDOFUSAGE$/d';
+	sed -n -e '/ENDOFUSAGE$/,/^ENDOFUSAGE$/p' "${basename}" | sed -e '/ENDOFUSAGE$/d';
 	exit 1
 fi
 
