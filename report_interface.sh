@@ -121,8 +121,11 @@ while  true; do
 	# Subtract previous bytes from current bytes.
 	rx_sub=$(((rx_current - rx_previous)/interval_time))
 	tx_sub=$(((tx_current - tx_previous)/interval_time))
+	# Bytes to KB
+	rx_kb=$(echo "scale=2; "${rx_sub}"/1024" | bc)
+	tx_kb=$(echo "scale=2; "${tx_sub}"/1024" | bc)
 	# Show the output.
-	printf "RX (bytes/s): %d \t TX (bytes/s): %d\n" "${rx_sub}" "${tx_sub}"
+	printf "RX (KB/s):%-7.2f TX (KB/s):%-0.2f  \n" "${rx_kb}" "${tx_kb}"
 	# store the number of bytes.
 	rx_previous="${rx_current}"
 	tx_previous="${tx_current}"
